@@ -10,14 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.zmote.handler;
+package org.openhab.binding.zmote.internal.handler;
 
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.zmote.ZMoteBindingConstants;
+import org.openhab.binding.zmote.internal.discovery.IZMoteDiscoveryService;
+import org.openhab.binding.zmote.internal.exception.CommunicationException;
+import org.openhab.binding.zmote.internal.exception.ConfigurationException;
+import org.openhab.binding.zmote.internal.exception.DeviceBusyException;
+import org.openhab.binding.zmote.internal.model.ZMoteConfig;
+import org.openhab.binding.zmote.internal.model.ZMoteDevice;
+import org.openhab.binding.zmote.internal.service.IZMoteService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -27,14 +33,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.binding.zmote.ZMoteBindingConstants;
-import org.openhab.binding.zmote.internal.discovery.IZMoteDiscoveryService;
-import org.openhab.binding.zmote.internal.exception.CommunicationException;
-import org.openhab.binding.zmote.internal.exception.ConfigurationException;
-import org.openhab.binding.zmote.internal.exception.DeviceBusyException;
-import org.openhab.binding.zmote.internal.model.ZMoteConfig;
-import org.openhab.binding.zmote.internal.model.ZMoteDevice;
-import org.openhab.binding.zmote.internal.service.IZMoteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,12 +43,10 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Maret-Huskinson - Initial contribution
  * @author Marcel van Bergen - Update to OH3
  */
-@NonNullByDefault
+/** @NonNullByDefault */
 public class ZMoteHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ZMoteHandler.class);
-
-    private @Nullable ZMoteConfiguration config;
 
     private final IZMoteService zmoteService;
     private final IZMoteDiscoveryService zmoteDiscoveryService;
@@ -137,7 +133,7 @@ public class ZMoteHandler extends BaseThingHandler {
     }
 
     private void onChannelSendCodeCommand(final ChannelUID channelUID, final Command command,
-                                          final ZMoteConfig config) {
+            final ZMoteConfig config) {
         if (!isThingOnline() || (command == null) || (command instanceof RefreshType)) {
             return;
         }

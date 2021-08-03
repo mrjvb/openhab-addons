@@ -15,12 +15,12 @@ package org.openhab.binding.zmote.internal.discovery;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openhab.binding.zmote.ZMoteBindingConstants;
+import org.openhab.binding.zmote.internal.model.ZMoteDevice;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.binding.zmote.ZMoteBindingConstants;
-import org.openhab.binding.zmote.internal.model.ZMoteDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

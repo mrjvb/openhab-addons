@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.zmote.internal.exception.ConfigurationException;
 import org.openhab.binding.zmote.internal.model.Button;
 import org.openhab.binding.zmote.internal.model.IRCode;

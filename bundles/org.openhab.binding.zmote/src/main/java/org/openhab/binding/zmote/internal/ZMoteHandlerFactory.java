@@ -12,24 +12,20 @@
  */
 package org.openhab.binding.zmote.internal;
 
-import static org.openhab.binding.zmote.internal.ZMoteBindingConstants.*;
+import static org.openhab.binding.zmote.ZMoteBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
+import org.openhab.binding.zmote.internal.discovery.IZMoteDiscoveryService;
+import org.openhab.binding.zmote.internal.handler.ZMoteHandler;
+import org.openhab.binding.zmote.internal.service.IZMoteService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-
-import org.openhab.binding.zmote.handler.ZMoteHandler;
-import org.openhab.binding.zmote.internal.discovery.IZMoteDiscoveryService;
-import org.openhab.binding.zmote.internal.service.IZMoteService;
-
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -39,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Alexander Maret-Huskinson - Initial contribution
  * @author Marcel van Bergen - Update to OH3
  */
-@NonNullByDefault
+/** @NonNullByDefault */
 @Component(configurationPid = "binding.zmote", service = ThingHandlerFactory.class)
 public class ZMoteHandlerFactory extends BaseThingHandlerFactory {
 
@@ -87,5 +83,4 @@ public class ZMoteHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetZMoteService(final IZMoteService service) {
         zmoteService = null;
     }
-
 }
