@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="porscheconnect"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Porsche ID Account</label>
+		<description>Porsche ID used in the My Porsche app; gives access to the vehicles with Porsche Connect</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<channels>
+			<channel id="captcha" typeId="captcha"/>
+		</channels>
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>E-mail</label>
+				<description>E-mail address of the Porsche ID</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of the Porsche ID</description>
+			</parameter>
+			<parameter name="captcha" type="text">
+				<label>Captcha</label>
+				<description>Only needed when the account status asks for it: the text shown in the captcha image. Cleared
+					automatically after use.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="5" unit="min">
+				<label>Refresh Interval</label>
+				<description>Minutes between status updates. The data comes from the Porsche cloud and does not wake the car.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Porsche Vehicle</label>
+		<description>A Porsche with Porsche Connect (Taycan, Macan Electric, 911 from MY2022, Cayenne from 2017, Panamera from
+			2021)</description>
+		<semantic-equipment-tag>Car</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="range" typeId="range"/>
+			<channel-group id="charge" typeId="charge"/>
+			<channel-group id="climate" typeId="climate"/>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="tires" typeId="tires"/>
+			<channel-group id="service" typeId="service"/>
+			<channel-group id="location" typeId="location"/>
+			<channel-group id="control" typeId="control"/>
+		</channel-groups>
+		<properties>
+			<property name="vendor">Porsche</property>
+		</properties>
+		<representation-property>vin</representation-property>
+		<config-description>
+			<parameter name="vin" type="text" required="true">
+				<label>VIN</label>
+				<description>Vehicle identification number</description>
+			</parameter>
+			<parameter name="pin" type="text">
+				<context>password</context>
+				<label>PIN</label>
+				<description>4 digit Porsche ID PIN, only needed to unlock the vehicle</description>
+			</parameter>
+			<parameter name="imageView" type="text">
+				<label>Picture View</label>
+				<description>Which vehicle picture to show on the picture channel</description>
+				<default>frontView</default>
+				<options>
+					<option value="frontView">Front</option>
+					<option value="sideView">Side</option>
+					<option value="rearView">Rear</option>
+					<option value="rearTopView">Rear Top</option>
+					<option value="topView">Top</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="status">
+		<label>Status</label>
+		<description>General vehicle status</description>
+		<channels>
+			<channel id="mileage" typeId="mileage"/>
+			<channel id="closed" typeId="closed"/>
+			<channel id="privacy-mode" typeId="privacy-mode"/>
+			<channel id="remote-access" typeId="remote-access"/>
+			<channel id="parking-brake" typeId="parking-brake"/>
+			<channel id="parking-light" typeId="parking-light"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="image" typeId="image"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="range">
+		<label>Range</label>
+		<description>Range and fuel</description>
+		<channels>
+			<channel id="total" typeId="range">
+				<label>Total Range</label>
+			</channel>
+			<channel id="electric" typeId="range">
+				<label>Electric Range</label>
+			</channel>
+			<channel id="fuel-level" typeId="fuel-level"/>
+			<channel id="fuel-reserve" typeId="fuel-reserve"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="charge">
+		<label>Charging</label>
+		<description>High voltage battery and charging</description>
+		<channels>
+			<channel id="soc" typeId="soc"/>
+			<channel id="status" typeId="charge-status"/>
+			<channel id="mode" typeId="charge-mode"/>
+			<channel id="rate" typeId="charge-rate"/>
+			<channel id="power" typeId="charge-power"/>
+			<channel id="target-soc" typeId="target-soc"/>
+			<channel id="finish-time" typeId="charge-finish"/>
+			<channel id="direct-charging" typeId="direct-charging"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="climate">
+		<label>Climatisation</label>
+		<description>Remote climatisation</description>
+		<channels>
+			<channel id="active" typeId="climate-active"/>
+			<channel id="target-temperature" typeId="climate-temperature"/>
+			<channel id="remaining-time" typeId="climate-remaining"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="doors">
+		<label>Doors and Lids</label>
+		<description>Doors, lids, sunroof and top</description>
+		<channels>
+			<channel id="front-left" typeId="open-state">
+				<label>Front Left Door</label>
+			</channel>
+			<channel id="front-right" typeId="open-state">
+				<label>Front Right Door</label>
+			</channel>
+			<channel id="rear-left" typeId="open-state">
+				<label>Rear Left Door</label>
+			</channel>
+			<channel id="rear-right" typeId="open-state">
+				<label>Rear Right Door</label>
+			</channel>
+			<channel id="hood" typeId="open-state">
+				<label>Front Lid</label>
+			</channel>
+			<channel id="trunk" typeId="open-state">
+				<label>Rear Lid</label>
+			</channel>
+			<channel id="service-flap" typeId="open-state">
+				<label>Service Flap</label>
+			</channel>
+			<channel id="sunroof" typeId="open-state">
+				<label>Sunroof</label>
+			</channel>
+			<channel id="sunroof-rear" typeId="open-state">
+				<label>Rear Sunroof</label>
+			</channel>
+			<channel id="top" typeId="open-state">
+				<label>Convertible Top</label>
+			</channel>
+			<channel id="spoiler" typeId="open-state">
+				<label>Spoiler</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="windows">
+		<label>Windows</label>
+		<description>Window states</description>
+		<channels>
+			<channel id="front-left" typeId="window-state">
+				<label>Front Left Window</label>
+			</channel>
+			<channel id="front-right" typeId="window-state">
+				<label>Front Right Window</label>
+			</channel>
+			<channel id="rear-left" typeId="window-state">
+				<label>Rear Left Window</label>
+			</channel>
+			<channel id="rear-right" typeId="window-state">
+				<label>Rear Right Window</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tires">
+		<label>Tires</label>
+		<description>Tire pressures</description>
+		<channels>
+			<channel id="front-left" typeId="tire-pressure">
+				<label>Front Left Tire</label>
+			</channel>
+			<channel id="front-right" typeId="tire-pressure">
+				<label>Front Right Tire</label>
+			</channel>
+			<channel id="rear-left" typeId="tire-pressure">
+				<label>Rear Left Tire</label>
+			</channel>
+			<channel id="rear-right" typeId="tire-pressure">
+				<label>Rear Right Tire</label>
+			</channel>
+			<channel id="warning" typeId="tire-warning"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="service">
+		<label>Service</label>
+		<description>Service intervals</description>
+		<channels>
+			<channel id="main-distance" typeId="service-distance">
+				<label>Main Service Distance</label>
+			</channel>
+			<channel id="main-time" typeId="service-time">
+				<label>Main Service Time</label>
+			</channel>
+			<channel id="oil-distance" typeId="service-distance">
+				<label>Oil Service Distance</label>
+			</channel>
+			<channel id="oil-time" typeId="service-time">
+				<label>Oil Service Time</label>
+			</channel>
+			<channel id="intermediate-distance" typeId="service-distance">
+				<label>Intermediate Service Distance</label>
+			</channel>
+			<channel id="intermediate-time" typeId="service-time">
+				<label>Intermediate Service Time</label>
+			</channel>
+			<channel id="oil-level" typeId="oil-level"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="location">
+		<label>Location</label>
+		<description>Vehicle position</description>
+		<channels>
+			<channel id="position" typeId="position"/>
+			<channel id="heading" typeId="heading"/>
+			<channel id="last-update" typeId="last-update">
+				<label>Position Updated</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="control">
+		<label>Remote Control</label>
+		<description>Remote commands</description>
+		<channels>
+			<channel id="lock" typeId="lock"/>
+			<channel id="flash" typeId="flash"/>
+			<channel id="honk-flash" typeId="honk-flash"/>
+			<channel id="wake-up" typeId="wake-up"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="mileage">
+		<item-type>Number:Length</item-type>
+		<label>Mileage</label>
+		<description>Odometer reading</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="closed">
+		<item-type>Contact</item-type>
+		<label>Doors and Lids</label>
+		<description>CLOSED when all doors, lids and windows are closed</description>
+		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="privacy-mode">
+		<item-type>Switch</item-type>
+		<label>Privacy Mode</label>
+		<description>Privacy mode of the vehicle (data sharing restricted)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="remote-access">
+		<item-type>Switch</item-type>
+		<label>Remote Access</label>
+		<description>Remote access authorized; required for remote commands</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="parking-brake">
+		<item-type>Switch</item-type>
+		<label>Parking Brake</label>
+		<description>Parking brake engaged</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="parking-light">
+		<item-type>Switch</item-type>
+		<label>Parking Light</label>
+		<description>Parking light on</description>
+		<category>Light</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Time the vehicle last reported data</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Vehicle Picture</label>
+		<description>Picture of the vehicle</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="range">
+		<item-type>Number:Length</item-type>
+		<label>Range</label>
+		<description>Remaining range</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="fuel-level">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fuel Level</label>
+		<description>Fuel tank level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="fuel-reserve">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fuel Reserve</label>
+		<description>Fuel reserve threshold</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<description>High voltage battery state of charge</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="charge-status">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<description>Charging status as reported by the vehicle, e.g. CHARGING, CHARGING_COMPLETED, NOT_PLUGGED</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charge-mode">
+		<item-type>String</item-type>
+		<label>Charging Mode</label>
+		<description>Charging mode, e.g. DIRECT, PROFILE, TIMER</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charge-rate">
+		<item-type>Number:Speed</item-type>
+		<label>Charging Rate</label>
+		<description>Range gained per hour of charging</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Charging Power</label>
+		<description>Current charging power</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="target-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Target State of Charge</label>
+		<description>Charge limit; changes the active charging profile or the departure charging settings</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state min="25" max="100" step="5" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="charge-finish">
+		<item-type>DateTime</item-type>
+		<label>Charging Finished</label>
+		<description>Estimated end of the charging session</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="direct-charging">
+		<item-type>Switch</item-type>
+		<label>Direct Charging</label>
+		<description>Charge immediately, ignoring timers and profiles</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+		<state/>
+	</channel-type>
+
+	<channel-type id="climate-active">
+		<item-type>Switch</item-type>
+		<label>Remote Climatisation</label>
+		<description>Start or stop remote climatisation</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Airconditioning</tag>
+		</tags>
+		<state/>
+	</channel-type>
+
+	<channel-type id="climate-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Climatisation Temperature</label>
+		<description>Target cabin temperature used when climatisation is started</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="15" max="30" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="climate-remaining">
+		<item-type>Number:Time</item-type>
+		<label>Climatisation Remaining</label>
+		<description>Remaining climatisation time</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="open-state">
+		<item-type>Contact</item-type>
+		<label>Open State</label>
+		<description>Door, lid or window open state</description>
+		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="window-state">
+		<item-type>Contact</item-type>
+		<label>Window</label>
+		<description>Window open state</description>
+		<category>Window</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tire-pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure</label>
+		<description>Measured tire pressure</description>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="tire-warning">
+		<item-type>Switch</item-type>
+		<label>Tire Pressure Warning</label>
+		<description>ON if a tire deviates more than 0.3 bar from its target pressure</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="service-distance">
+		<item-type>Number:Length</item-type>
+		<label>Service Distance</label>
+		<description>Distance until service is due</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="service-time">
+		<item-type>Number:Time</item-type>
+		<label>Service Time</label>
+		<description>Time until service is due</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="oil-level">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Oil Level</label>
+		<description>Current engine oil level</description>
+		<category>Oil</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Oil</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="position">
+		<item-type>Location</item-type>
+		<label>Position</label>
+		<description>GPS position of the vehicle</description>
+		<category>Location</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heading">
+		<item-type>Number:Angle</item-type>
+		<label>Heading</label>
+		<description>Direction the vehicle is facing</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>ON locks the vehicle, OFF unlocks it (needs the PIN configured on the vehicle thing)</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state/>
+	</channel-type>
+
+	<channel-type id="flash">
+		<item-type>Switch</item-type>
+		<label>Flash Indicators</label>
+		<description>Flash the indicators briefly</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="honk-flash">
+		<item-type>Switch</item-type>
+		<label>Honk and Flash</label>
+		<description>Honk and flash the indicators briefly</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="wake-up">
+		<item-type>Switch</item-type>
+		<label>Request Live Data</label>
+		<description>Wake the vehicle up to report fresh data (uses the 12V battery, use sparingly)</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="captcha">
+		<item-type>Image</item-type>
+		<label>Captcha</label>
+		<description>Captcha to solve when the Porsche ID login asks for one</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

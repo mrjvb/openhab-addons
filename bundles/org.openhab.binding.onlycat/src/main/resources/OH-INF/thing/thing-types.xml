@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onlycat"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>OnlyCat Account</label>
+		<description>Connection to the OnlyCat cloud account</description>
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>Developer API key created in the OnlyCat app</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>OnlyCat Flap</label>
+		<description>OnlyCat smart cat flap</description>
+		<channels>
+			<channel id="connected" typeId="connected"/>
+			<channel id="description" typeId="description"/>
+			<channel id="active-policy" typeId="active-policy"/>
+		</channels>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>OnlyCat device identifier</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="connected">
+		<item-type>Switch</item-type>
+		<label>Connected</label>
+		<description>Whether the flap is connected to the OnlyCat cloud</description>
+	</channel-type>
+	<channel-type id="description">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Device name assigned in the OnlyCat app</description>
+	</channel-type>
+	<channel-type id="active-policy">
+		<item-type>Number</item-type>
+		<label>Active Policy ID</label>
+		<description>Identifier of the active transit policy</description>
+	</channel-type>
+</thing:thing-descriptions>
