@@ -110,12 +110,12 @@ public class OnlyCatFlapHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(OnlyCatFlapConfiguration.class);
         if (config.deviceId.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error.missing-device-id");
             return;
         }
         if (getAccount() == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -124,7 +124,7 @@ public class OnlyCatFlapHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
         // when the bridge is back, the account replays its data, which sets this Thing online
     }
@@ -204,8 +204,7 @@ public class OnlyCatFlapHandler extends BaseThingHandler {
         try {
             if (JsonParser.parseString(policyJson) instanceof JsonObject policy
                     && policy.get("deviceTransitPolicyId") instanceof JsonPrimitive id && id.isNumber()
-                    && policy.get("transitPolicy") instanceof JsonObject
-                    && policies.stream()
+                    && policy.get("transitPolicy") instanceof JsonObject && policies.stream()
                             .anyMatch(known -> Objects.equals(known.deviceTransitPolicyId, id.getAsLong()))) {
                 account.updatePolicy(config.deviceId, policy);
                 return true;
@@ -217,8 +216,8 @@ public class OnlyCatFlapHandler extends BaseThingHandler {
     }
 
     void deviceNotFound() {
-        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.config-error.unknown-flap");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            "@text/offline.config-error.unknown-flap");
     }
 
     void updateDevice(Device update) {
@@ -366,9 +365,10 @@ public class OnlyCatFlapHandler extends BaseThingHandler {
         updateState(CHANNEL_HUMAN,
                 OnOffType.from(classification != null && classification == DeviceEvent.CLASSIFICATION_HUMAN_ACTIVITY));
         String token = current.accessToken;
-        updateState(CHANNEL_VIDEO_URL, token == null ? UnDefType.UNDEF
-                : new StringType("https://" + OnlyCatGateway.HOST + "/sharing/video/" + current.deviceId + "/" + eventId
-                        + "?t=" + token));
+        updateState(CHANNEL_VIDEO_URL,
+                token == null ? UnDefType.UNDEF
+                        : new StringType("https://" + OnlyCatGateway.HOST + "/sharing/video/" + current.deviceId + "/"
+                                + eventId + "?t=" + token));
     }
 
     private void publishSummary() {

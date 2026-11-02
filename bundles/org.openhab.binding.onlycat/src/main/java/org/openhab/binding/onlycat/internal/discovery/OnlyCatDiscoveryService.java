@@ -70,10 +70,9 @@ public class OnlyCatDiscoveryService extends AbstractThingHandlerDiscoveryServic
 
     public void catFound(CatState cat) {
         ThingUID bridgeUID = thingHandler.getThing().getUID();
-        thingDiscovered(
-                DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CAT, bridgeUID, uidSegment(cat.rfidCode)))
-                        .withBridge(bridgeUID).withLabel(cat.getName()).withProperty(CONFIG_RFID_CODE, cat.rfidCode)
-                        .withRepresentationProperty(CONFIG_RFID_CODE).build());
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CAT, bridgeUID, uidSegment(cat.rfidCode)))
+                .withBridge(bridgeUID).withLabel(cat.getName()).withProperty(CONFIG_RFID_CODE, cat.rfidCode)
+                .withRepresentationProperty(CONFIG_RFID_CODE).build());
     }
 
     private static String uidSegment(String id) {

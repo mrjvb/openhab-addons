@@ -94,8 +94,7 @@ class DoorPolicyTest {
 
     @Test
     void timeRangesUseTheZoneOfTheFlapAndWrapMidnight() {
-        DoorPolicy policy = policy(false,
-                "{\"criteria\":{\"timeRange\":\"22:00-06:00\"},\"action\":{\"lock\":true}}");
+        DoorPolicy policy = policy(false, "{\"criteria\":{\"timeRange\":\"22:00-06:00\"},\"action\":{\"lock\":true}}");
         // Amsterdam is at UTC+1 on this date
         assertEquals(LockVerdict.LOCKED, policy.evaluate(event("21:30"), AMSTERDAM, NONE));
         assertEquals(LockVerdict.LOCKED, policy.evaluate(event("04:30"), AMSTERDAM, NONE));

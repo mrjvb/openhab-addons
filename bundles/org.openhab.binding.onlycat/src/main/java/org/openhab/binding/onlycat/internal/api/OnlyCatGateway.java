@@ -92,8 +92,7 @@ public class OnlyCatGateway {
         return readList(request("getDeviceEvents", device(deviceId, true)), EVENT_LIST);
     }
 
-    public @Nullable DeviceEvent getEvent(String deviceId, long eventId, boolean subscribe)
-            throws OnlyCatApiException {
+    public @Nullable DeviceEvent getEvent(String deviceId, long eventId, boolean subscribe) throws OnlyCatApiException {
         return read(request("getEvent", event(deviceId, eventId, subscribe)), DeviceEvent.class);
     }
 
@@ -191,8 +190,7 @@ public class OnlyCatGateway {
     }
 
     private void checkStatus(String event, JsonElement reply) throws OnlyCatApiException {
-        if (reply instanceof JsonObject object && object.get("code") instanceof JsonPrimitive code
-                && code.isNumber()) {
+        if (reply instanceof JsonObject object && object.get("code") instanceof JsonPrimitive code && code.isNumber()) {
             int status = code.getAsInt();
             if (status == STATUS_UNAUTHORIZED) {
                 throw new OnlyCatAuthenticationException("The API key was rejected");

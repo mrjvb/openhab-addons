@@ -63,7 +63,7 @@ public class OnlyCatCatHandler extends BaseThingHandler {
     public void initialize() {
         rfidCode = getConfigAs(OnlyCatCatConfiguration.class).rfidCode;
         if (rfidCode.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error.missing-rfid-code");
             return;
         }
@@ -93,8 +93,8 @@ public class OnlyCatCatHandler extends BaseThingHandler {
     }
 
     void catNotFound() {
-        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.config-error.unknown-cat");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            "@text/offline.config-error.unknown-cat");
     }
 
     private void publish() {

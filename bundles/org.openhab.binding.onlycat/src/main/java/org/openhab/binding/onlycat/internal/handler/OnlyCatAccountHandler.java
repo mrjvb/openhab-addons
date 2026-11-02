@@ -130,7 +130,7 @@ public class OnlyCatAccountHandler extends BaseBridgeHandler implements SocketIo
     public void initialize() {
         config = getConfigAs(OnlyCatAccountConfiguration.class);
         if (config.apiKey.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error.missing-api-key");
             return;
         }
@@ -266,7 +266,7 @@ public class OnlyCatAccountHandler extends BaseBridgeHandler implements SocketIo
             socket = null;
             gateway = null;
             cancelJobs();
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
             scheduleReconnect();
         });
     }
@@ -301,7 +301,7 @@ public class OnlyCatAccountHandler extends BaseBridgeHandler implements SocketIo
             newSocket.connect();
         } catch (Exception e) {
             logger.debug("Cannot connect to the gateway: {}", e.getMessage());
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduleReconnect();
         }
     }
@@ -368,7 +368,7 @@ public class OnlyCatAccountHandler extends BaseBridgeHandler implements SocketIo
             if (currentSocket != null) {
                 currentSocket.close();
             }
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error.invalid-api-key");
         } catch (OnlyCatApiException e) {
             SocketIoClient currentSocket = socket;
@@ -404,8 +404,7 @@ public class OnlyCatAccountHandler extends BaseBridgeHandler implements SocketIo
         }
         if (currentExecutor != null) {
             long interval = Math.max(1, config.refreshInterval);
-            refreshJob = currentExecutor.scheduleWithFixedDelay(this::refreshAll, interval, interval,
-                    TimeUnit.MINUTES);
+            refreshJob = currentExecutor.scheduleWithFixedDelay(this::refreshAll, interval, interval, TimeUnit.MINUTES);
         }
     }
 
@@ -702,8 +701,8 @@ public class OnlyCatAccountHandler extends BaseBridgeHandler implements SocketIo
             if (accessToken != null) {
                 String id = deviceId;
                 long summaryEvent = eventId;
-                attemptNow(id, currentGateway, gatewayCall -> applySummary(
-                        gatewayCall.getEventSummary(id, summaryEvent, accessToken, false)));
+                attemptNow(id, currentGateway,
+                        gatewayCall -> applySummary(gatewayCall.getEventSummary(id, summaryEvent, accessToken, false)));
             }
         }
     }
@@ -766,8 +765,9 @@ public class OnlyCatAccountHandler extends BaseBridgeHandler implements SocketIo
         OnlyCatDiscoveryService service = discoveryService;
         if (service != null) {
             devices.values().forEach(service::flapFound);
-            cats.values().stream().filter(cat -> !hiddenCats.contains(cat.rfidCode)
-                    && (cat.label != null || cat.lastDeviceId != null)).forEach(service::catFound);
+            cats.values().stream().filter(
+                    cat -> !hiddenCats.contains(cat.rfidCode) && (cat.label != null || cat.lastDeviceId != null))
+                    .forEach(service::catFound);
         }
     }
 
