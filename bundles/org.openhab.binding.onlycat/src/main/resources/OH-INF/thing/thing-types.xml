@@ -1,36 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="onlycat"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="onlycat" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="account">
 		<label>OnlyCat Account</label>
-		<description>Connection to the OnlyCat cloud account</description>
+		<description>Connection to an OnlyCat account</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
 				<context>password</context>
 				<label>API Key</label>
-				<description>Developer API key created in the OnlyCat app</description>
+				<description>Create a key in the OnlyCat app: enable Developer Mode under Account, then open API Keys</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="1" unit="min">
+				<label>Refresh Interval</label>
+				<description>How often to refresh door policies, cat names and reboot logs, which change without notification</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="rebootLogHours" type="integer" min="1" unit="h">
+				<label>Reboot Log Period</label>
+				<description>How many hours of reboot history to report</description>
+				<default>24</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="detailedMetrics" type="boolean">
+				<label>Detailed Metrics</label>
+				<description>Also fetch the telemetry metrics of each flap</description>
+				<default>false</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="device">
+	<thing-type id="flap">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>OnlyCat Flap</label>
-		<description>OnlyCat smart cat flap</description>
+		<description>An OnlyCat smart cat flap</description>
+		<semantic-equipment-tag>PetFlap</semantic-equipment-tag>
 		<channels>
 			<channel id="connected" typeId="connected"/>
-			<channel id="description" typeId="description"/>
-			<channel id="active-policy" typeId="active-policy"/>
+			<channel id="disconnect-reason" typeId="disconnect-reason"/>
+			<channel id="connectivity-changed" typeId="connectivity-changed"/>
+			<channel id="locked" typeId="locked"/>
+			<channel id="door-policy" typeId="door-policy"/>
+			<channel id="door-policy-definition" typeId="door-policy-definition"/>
+			<channel id="unlock" typeId="unlock"/>
+			<channel id="reboot" typeId="reboot"/>
+			<channel id="event-active" typeId="event-active"/>
+			<channel id="event-id" typeId="event-id"/>
+			<channel id="event-time" typeId="event-time"/>
+			<channel id="event-trigger" typeId="event-trigger"/>
+			<channel id="event-classification" typeId="event-classification"/>
+			<channel id="event-rfid" typeId="event-rfid"/>
+			<channel id="event-cat" typeId="event-cat"/>
+			<channel id="event-direction" typeId="direction"/>
+			<channel id="event-action" typeId="action"/>
+			<channel id="contraband" typeId="contraband"/>
+			<channel id="human" typeId="human"/>
+			<channel id="image" typeId="image"/>
+			<channel id="video-url" typeId="video-url"/>
+			<channel id="error" typeId="error"/>
+			<channel id="reboot-log" typeId="reboot-log"/>
+			<channel id="telemetry" typeId="telemetry"/>
 		</channels>
+		<properties>
+			<property name="vendor">OnlyCat</property>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device ID</label>
-				<description>OnlyCat device identifier</description>
+				<description>The ID of the flap, such as OC-8C1F64481234</description>
+			</parameter>
+			<parameter name="ignoreFlapStateRules" type="boolean">
+				<label>Ignore Flap State Rules</label>
+				<description>Leave door policy rules on the flap state out of the lock state estimate</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ignoreMotionSensorRules" type="boolean">
+				<label>Ignore Motion Sensor Rules</label>
+				<description>Leave door policy rules on the motion sensors out of the lock state estimate</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="cat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>OnlyCat Cat</label>
+		<description>A cat known to the flaps of the account by its RFID code</description>
+		<channels>
+			<channel id="presence" typeId="presence"/>
+			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="last-flap" typeId="last-flap"/>
+			<channel id="last-direction" typeId="direction"/>
+			<channel id="last-action" typeId="action"/>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<representation-property>rfidCode</representation-property>
+		<config-description>
+			<parameter name="rfidCode" type="text" required="true">
+				<label>RFID Code</label>
+				<description>The RFID code of the cat's microchip</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -39,15 +121,219 @@
 		<item-type>Switch</item-type>
 		<label>Connected</label>
 		<description>Whether the flap is connected to the OnlyCat cloud</description>
+		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="description">
+
+	<channel-type id="disconnect-reason" advanced="true">
 		<item-type>String</item-type>
-		<label>Description</label>
-		<description>Device name assigned in the OnlyCat app</description>
+		<label>Disconnect Reason</label>
+		<description>Why the flap lost its connection</description>
+		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="active-policy">
+
+	<channel-type id="connectivity-changed" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Connectivity Changed</label>
+		<description>When the flap last connected or disconnected</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>Estimated lock state derived from the door policy; undefined if it cannot be determined</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="door-policy-definition" advanced="true">
+		<item-type>String</item-type>
+		<label>Door Policy Definition</label>
+		<description>The active door policy as JSON</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-active">
+		<item-type>Switch</item-type>
+		<label>Event Active</label>
+		<description>Whether an event is in progress</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-id" advanced="true">
 		<item-type>Number</item-type>
-		<label>Active Policy ID</label>
-		<description>Identifier of the active transit policy</description>
+		<label>Event ID</label>
+		<description>The ID of the latest event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-time">
+		<item-type>DateTime</item-type>
+		<label>Event Time</label>
+		<description>When the latest event started</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-rfid" advanced="true">
+		<item-type>String</item-type>
+		<label>Event RFID Codes</label>
+		<description>Comma-separated RFID codes seen in the latest event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-cat">
+		<item-type>String</item-type>
+		<label>Event Cat</label>
+		<description>Names of the cats seen in the latest event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="contraband">
+		<item-type>Switch</item-type>
+		<label>Contraband</label>
+		<description>Whether the latest event was classified as contraband</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="human">
+		<item-type>Switch</item-type>
+		<label>Human Activity</label>
+		<description>Whether the latest event was classified as human activity</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Event Image</label>
+		<description>A still frame of the latest event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="video-url" advanced="true">
+		<item-type>String</item-type>
+		<label>Event Video URL</label>
+		<description>HLS playlist of the latest event; contains an access token</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="error">
+		<item-type>Switch</item-type>
+		<label>Error</label>
+		<description>Whether the flap logged an error reboot in the configured period</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="reboot-log" advanced="true">
+		<item-type>String</item-type>
+		<label>Reboot Log</label>
+		<description>The reboots in the configured period as JSON</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="telemetry" advanced="true">
+		<item-type>String</item-type>
+		<label>Telemetry</label>
+		<description>The latest telemetry metrics as JSON, if detailed metrics are enabled</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-seen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>When the cat was last seen at a flap</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-flap" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Flap</label>
+		<description>The ID of the flap that last saw the cat</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-trigger">
+		<item-type>String</item-type>
+		<label>Event Trigger</label>
+		<description>What started the latest event</description>
+		<state readOnly="true">
+			<options>
+				<option value="MANUAL">Manual</option>
+				<option value="REMOTE">Remote</option>
+				<option value="INDOOR_MOTION">Indoor Motion</option>
+				<option value="OUTDOOR_MOTION">Outdoor Motion</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="event-classification">
+		<item-type>String</item-type>
+		<label>Event Classification</label>
+		<description>The classification of the latest event</description>
+		<state readOnly="true">
+			<options>
+				<option value="UNKNOWN">Unknown</option>
+				<option value="CLEAR">Clear</option>
+				<option value="SUSPICIOUS">Suspicious</option>
+				<option value="CONTRABAND">Contraband</option>
+				<option value="HUMAN_ACTIVITY">Human Activity</option>
+				<option value="REMOTE_UNLOCK">Remote Unlock</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="direction">
+		<item-type>String</item-type>
+		<label>Direction</label>
+		<description>The direction of the last movement at the flap</description>
+		<state readOnly="true">
+			<options>
+				<option value="INWARD">Inward</option>
+				<option value="OUTWARD">Outward</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="action">
+		<item-type>String</item-type>
+		<label>Action</label>
+		<description>What the cat did at the flap</description>
+		<state readOnly="true">
+			<options>
+				<option value="TRANSIT">Transit</option>
+				<option value="PEEK">Peek</option>
+				<option value="DENY">Denied</option>
+				<option value="BREACH">Breach</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="door-policy">
+		<item-type>String</item-type>
+		<label>Door Policy</label>
+		<description>The active door policy; send the name of a policy to activate it</description>
+	</channel-type>
+
+	<channel-type id="unlock">
+		<item-type>Switch</item-type>
+		<label>Remote Unlock</label>
+		<description>Send ON to unlock the flap for a single passage</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="reboot" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Reboot</label>
+		<description>Send ON to reboot the flap</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="presence">
+		<item-type>Switch</item-type>
+		<label>Presence</label>
+		<description>Whether the cat is inside; send ON or OFF to correct it until the cat is next seen at a flap</description>
+		<category>Presence</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

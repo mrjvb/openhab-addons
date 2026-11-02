@@ -7,43 +7,11 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.2.4-SNAPSHOT</version>
+    <version>5.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.onlycat</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: OnlyCat Binding</name>
-
-  <properties>
-    <bnd.importpackage>android.*;resolution:=optional,com.android.org.*;resolution:=optional,dalvik.*;resolution:=optional,javax.annotation.meta.*;resolution:=optional,org.apache.harmony.*;resolution:=optional,org.conscrypt.*;resolution:=optional,sun.security.*;resolution:=optional</bnd.importpackage>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>io.socket</groupId>
-      <artifactId>socket.io-client</artifactId>
-      <version>2.1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>io.socket</groupId>
-      <artifactId>engine.io-client</artifactId>
-      <version>2.1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp</artifactId>
-      <version>3.12.12</version>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okio</groupId>
-      <artifactId>okio</artifactId>
-      <version>1.15.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>${json.version}</version>
-    </dependency>
-  </dependencies>
 
 </project>

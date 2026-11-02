@@ -14,21 +14,25 @@ package org.openhab.binding.onlycat.internal;
 
 import static org.openhab.binding.onlycat.internal.OnlyCatBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.onlycat.internal.handler.OnlyCatAccountHandler;
+import org.openhab.binding.onlycat.internal.handler.OnlyCatCatHandler;
+import org.openhab.binding.onlycat.internal.handler.OnlyCatFlapHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link OnlyCatHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * Creates the handlers of the OnlyCat binding.
  *
  * @author Marcel van Bergen - Initial contribution
  */
@@ -36,24 +40,36 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.onlycat", service = ThingHandlerFactory.class)
 public class OnlyCatHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DEVICE);
+    private final WebSocketFactory webSocketFactory;
+    private final HttpClientFactory httpClientFactory;
+    private final OnlyCatStateDescriptionProvider stateDescriptionProvider;
+
+    @Activate
+    public OnlyCatHandlerFactory(final @Reference WebSocketFactory webSocketFactory,
+            final @Reference HttpClientFactory httpClientFactory,
+            final @Reference OnlyCatStateDescriptionProvider stateDescriptionProvider) {
+        this.webSocketFactory = webSocketFactory;
+        this.httpClientFactory = httpClientFactory;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new OnlyCatAccountHandler((Bridge) thing);
+        if (THING_TYPE_ACCOUNT.equals(thingTypeUID) && thing instanceof Bridge bridge) {
+            return new OnlyCatAccountHandler(bridge, webSocketFactory);
         }
-        if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new OnlyCatDeviceHandler(thing);
+        if (THING_TYPE_FLAP.equals(thingTypeUID)) {
+            return new OnlyCatFlapHandler(thing, httpClientFactory.getCommonHttpClient(), stateDescriptionProvider);
         }
-
+        if (THING_TYPE_CAT.equals(thingTypeUID)) {
+            return new OnlyCatCatHandler(thing);
+        }
         return null;
     }
 }

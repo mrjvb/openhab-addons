@@ -10,17 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.onlycat.internal;
+package org.openhab.binding.onlycat.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Account bridge configuration.
+ * The configuration of an account.
  *
  * @author Marcel van Bergen - Initial contribution
  */
 @NonNullByDefault
-public class OnlyCatConfiguration {
-
+public class OnlyCatAccountConfiguration {
     public String apiKey = "";
+    public int refreshInterval = 10;
+    public int rebootLogHours = 24;
+    public boolean detailedMetrics = false;
 }

@@ -5,6 +5,8 @@
 
 	<type>binding</type>
 	<name>OnlyCat Binding</name>
-	<description>Connects OnlyCat smart cat flaps to openHAB.</description>
+	<description>Integrates OnlyCat smart cat flaps: presence of your cats, flap events, prey detection, door policies and
+		remote unlock.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

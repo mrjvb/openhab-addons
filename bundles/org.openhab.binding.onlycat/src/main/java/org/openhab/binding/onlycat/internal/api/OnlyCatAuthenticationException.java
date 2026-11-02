@@ -10,17 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.onlycat.internal;
+package org.openhab.binding.onlycat.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration of a discovered OnlyCat flap.
+ * Signals that the gateway rejected the configured API key.
  *
  * @author Marcel van Bergen - Initial contribution
  */
 @NonNullByDefault
-public class OnlyCatDeviceConfiguration {
+public class OnlyCatAuthenticationException extends OnlyCatApiException {
+    private static final long serialVersionUID = 1L;
 
-    public String deviceId = "";
+    public OnlyCatAuthenticationException(String message) {
+        super(message);
+    }
 }
