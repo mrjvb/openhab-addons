@@ -1,19 +1,20 @@
 # Porsche Connect Binding
 
 This binding connects openHAB to Porsche vehicles with _Porsche Connect_ — the service behind the My Porsche app.
-It talks to the Porsche cloud, so it works wherever the car has mobile reception.
+It connects to the Porsche cloud, so it works wherever the car has mobile reception.
 
-It is a port of the Home Assistant custom integration [ha-porscheconnect](https://github.com/CJNE/ha-porscheconnect) and its Python library [pyporscheconnectapi](https://github.com/CJNE/pyporscheconnectapi).
-The Porsche API is not public; it can change without notice.
+It is based on the Python library [pyporscheconnectapi](https://github.com/CJNE/pyporscheconnectapi) that is also used for the Home Assistant integration [ha-porscheconnect](https://github.com/CJNE/ha-porscheconnect).
+The Porsche API is not public and can therefore change without notice.
 
-Porsche Connect is available for, among others:
+Porsche Connect is available for most models from 2022 (that have PCM 6.0 or newer) such as:
 
-- Taycan and Macan Electric
-- 911 (992, from model year 2022)
-- Cayenne (from 2017, E3)
-- Panamera (from 2021, G2 PA)
+- Porsche 911 (992.1 facelift and 992.2, from model year 2022)
+- Porsche Taycan (J1 phase 1 and phase 2 J1 II from model year 2022)
+- Porsche Cayenne (E3 / E3 II from model year 2022)
+- Porsche Panamera (late generation 2 of G2 and all G3 from model year 2022)
+- Porsche Macan Electric and later generation ICE models (from model year 2024)
 
-The older _Porsche Car Connect_ service is not supported.
+Note that The older models such as the Porsche 718 (Boxster/Cayman), older iterations of the Macan (2017–2023) running PCM 5.0 or older, and legacy 911s (like the 991 generation) do not feature PCM 6.0 natively and therefor do not support _Porsche Connect_. This binding does not support the _Porsche Car Connect_ service.
 
 ## Supported Things
 
@@ -129,7 +130,7 @@ A failed command is logged as a warning and the channel falls back to the report
 
 ```java
 Bridge porscheconnect:account:myporsche "Porsche ID" [ email="me@example.com", password="secret", refreshInterval=30 ] {
-    Thing vehicle taycan "Taycan" [ vin="WP0ZZZY1ZPSA00001", pin="1234" ]
+    Thing vehicle taycan "Taycan" [ vin="WP0ZZZY0123456789", pin="1234" ]
 }
 ```
 
