@@ -3,7 +3,7 @@
 This binding connects openHAB to Porsche vehicles with _Porsche Connect_ — the service behind the My Porsche app.
 It connects to the Porsche cloud, so it works wherever the car has mobile reception.
 
-It is based on the Python library [pyporscheconnectapi](https://github.com/CJNE/pyporscheconnectapi) that is also used for the Home Assistant integration [ha-porscheconnect](https://github.com/CJNE/ha-porscheconnect).
+It is based on the Python library [pyporscheconnectapi](https://github.com/CJNE/pyporscheconnectapi) that is also used for the HA integration [ha-porscheconnect](https://github.com/CJNE/ha-porscheconnect).
 The Porsche API is not public and can therefore change without notice.
 
 Porsche Connect is available for most models from 2022 (that have PCM 6.0 or newer) such as:
@@ -167,24 +167,3 @@ sitemap porsche label="Porsche" {
     }
 }
 ```
-
-## Mapping from the Home Assistant integration
-
-| Home Assistant entity                  | openHAB channel                                  |
-|----------------------------------------|--------------------------------------------------|
-| sensor `state_of_charge`               | `charge#soc`                                     |
-| sensor `charging_status`, `charging_rate`, `charging_power`, `charging_finished`, `charging_target` | `charge#status`, `charge#rate`, `charge#power`, `charge#finish-time`, `charge#target-soc` |
-| sensor `remaining_range`, `remaining_range_electric`, `fuel_level` | `range#total`, `range#electric`, `range#fuel-level` |
-| sensor `mileage`                       | `status#mileage`                                 |
-| sensors `*_service_range`, `*_service_time`, `oil_level` | `service#*`                    |
-| sensors `vin`, `model_year`            | thing properties                                 |
-| binary_sensor `remote_access`, `privacy_mode`, `parking_brake`, `parking_light` | `status#…`              |
-| binary_sensor `doors_and_lids` (+ attributes) | `status#closed`, `doors#…`, `windows#…`   |
-| binary_sensor `tire_pressure_status` (+ attributes) | `tires#warning`, `tires#…`          |
-| device_tracker                         | `location#position`, `location#heading`          |
-| number `target_soc`                    | `charge#target-soc`                              |
-| switch `climatise`, `direct_charging`  | `climate#active`, `charge#direct-charging`       |
-| service `climatisation_start` (temperature) | `climate#target-temperature` + `climate#active` |
-| button `flash_indicators`, `honk_and_flash_indicators`, `get_current_overview` | `control#flash`, `control#honk-flash`, `control#wake-up` |
-| lock                                   | `control#lock` (+ `pin` parameter)               |
-| image                                  | `status#image`                                   |
