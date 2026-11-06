@@ -41,8 +41,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Porsche Vehicle</label>
-		<description>A Porsche with Porsche Connect (Taycan, Macan Electric, 911 from MY2022, Cayenne from 2017, Panamera from
-			2021)</description>
+		<description>A Porsche with Porsche Connect (see documentation for supported vehicles)</description>
 		<semantic-equipment-tag>Car</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="status" typeId="status"/>

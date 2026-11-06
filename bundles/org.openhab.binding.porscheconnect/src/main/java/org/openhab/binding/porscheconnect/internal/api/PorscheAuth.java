@@ -53,8 +53,8 @@ import com.google.gson.JsonParser;
 
 /**
  * Porsche ID (Auth0) login: authorization code flow with PKCE using the "identifier first" universal login screens,
- * including captcha and passkey-enrollment handling. Port of pyporscheconnectapi/oauth2.py.
- * <p>
+ * including captcha and passkey-enrollment handling based on pyporscheconnectapi/oauth2.py.
+ * 
  * The {@link HttpClient} passed in must not follow redirects on its own for these requests (every request here
  * disables it explicitly) and should be dedicated to one account, because the Auth0 session lives in its cookie
  * store.

@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Constants of the Porsche Connect cloud API (ported from pyporscheconnectapi/const.py).
+ * Constants of the Porsche Connect cloud API (based on pyporscheconnectapi/const.py).
  *
  * @author Marcel van Bergen - Initial contribution
  */

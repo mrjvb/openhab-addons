@@ -28,7 +28,7 @@ import com.google.gson.JsonObject;
 
 /**
  * Snapshot of one vehicle: base data from the vehicle list plus the enabled measurements of the last overview,
- * flattened to {@code MEASUREMENT_KEY -> value object}. Port of the data handling and properties of
+ * flattened to {@code MEASUREMENT_KEY -> value object}. Based on data handling and properties of
  * pyporscheconnectapi/vehicle.py.
  *
  * @author Marcel van Bergen - Initial contribution

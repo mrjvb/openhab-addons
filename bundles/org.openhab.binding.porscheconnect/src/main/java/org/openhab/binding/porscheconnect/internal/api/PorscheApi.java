@@ -49,8 +49,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
- * Porsche Connect REST API client for one account: token handling, retries, vehicle data and remote commands.
- * Port of pyporscheconnectapi connection.py, account.py, vehicle.py and remote_services.py. Thread safe.
+ * Porsche Connect REST API client for one account: token handling, retries, vehicle data and remote commands. Thread
+ * safe.
  *
  * @author Marcel van Bergen - Initial contribution
  */
