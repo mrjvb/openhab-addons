@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dyson"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="fan">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Dyson Purifier / Fan / Heater / Humidifier</label>
+		<description>A Dyson environment cleaner: air purifier, fan, Hot+Cool heater or humidifier. Channels for features the
+			device does not report are removed automatically.</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="auto-mode" typeId="mode-switch">
+				<label>Auto Mode</label>
+				<description>The device adjusts the fan speed to the air quality.</description>
+			</channel>
+			<channel id="night-mode" typeId="mode-switch">
+				<label>Night Mode</label>
+				<description>Quiet operation with a dimmed display.</description>
+			</channel>
+			<channel id="oscillation" typeId="airflow-switch">
+				<label>Oscillation</label>
+			</channel>
+			<channel id="oscillation-mode" typeId="oscillation-mode"/>
+			<channel id="oscillation-lower-angle" typeId="oscillation-angle">
+				<label>Oscillation Lower Angle</label>
+			</channel>
+			<channel id="oscillation-upper-angle" typeId="oscillation-angle">
+				<label>Oscillation Upper Angle</label>
+			</channel>
+			<channel id="oscillation-center-angle" typeId="oscillation-angle">
+				<label>Oscillation Center Angle</label>
+				<description>Moves the oscillation range while keeping its span.</description>
+			</channel>
+			<channel id="oscillation-span" typeId="oscillation-angle">
+				<label>Oscillation Span</label>
+				<description>Changes the oscillation range around its center.</description>
+			</channel>
+			<channel id="tilt-oscillation" typeId="tilt-oscillation"/>
+			<channel id="sleep-timer" typeId="sleep-timer"/>
+			<channel id="continuous-monitoring" typeId="continuous-monitoring"/>
+			<channel id="front-airflow" typeId="airflow-switch">
+				<label>Front Airflow</label>
+				<description>ON blows air from the front (cooling), OFF from the back (diffused).</description>
+			</channel>
+			<channel id="focus-mode" typeId="airflow-switch">
+				<label>Focus Mode</label>
+				<description>Focused (ON) or diffused (OFF) airflow on older heater models.</description>
+			</channel>
+			<channel id="find-follow" typeId="airflow-switch">
+				<label>Find+Follow</label>
+				<description>Follows people in the room with the airflow.</description>
+			</channel>
+			<channel id="find-follow-status" typeId="text">
+				<label>Find+Follow Status</label>
+			</channel>
+			<channel id="find-follow-scan" typeId="button">
+				<label>Find+Follow Scan</label>
+				<description>Starts a scan for people in the room.</description>
+			</channel>
+			<channel id="heating-mode" typeId="heating-mode"/>
+			<channel id="target-temperature" typeId="target-temperature"/>
+			<channel id="heating-active" typeId="heating-active"/>
+			<channel id="humidifier" typeId="humidifier"/>
+			<channel id="humidifier-auto" typeId="mode-switch">
+				<label>Auto Humidity</label>
+				<description>The device chooses the humidity target.</description>
+			</channel>
+			<channel id="target-humidity" typeId="target-humidity"/>
+			<channel id="water-hardness" typeId="water-hardness"/>
+			<channel id="next-deep-clean" typeId="duration">
+				<label>Next Deep Clean</label>
+				<description>Operating time until the next humidifier deep clean is required.</description>
+			</channel>
+			<channel id="deep-clean-remaining" typeId="duration">
+				<label>Deep Clean Remaining</label>
+				<description>Remaining time of a running humidifier deep clean.</description>
+			</channel>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="pm25" typeId="particulate-matter">
+				<label>PM2.5</label>
+				<description>Fine particulate matter (PM2.5).</description>
+			</channel>
+			<channel id="pm10" typeId="particulate-matter">
+				<label>PM10</label>
+				<description>Coarse particulate matter (PM10).</description>
+			</channel>
+			<channel id="particulates" typeId="particulate-matter">
+				<label>Particulates</label>
+				<description>Particulate matter level of older (Link) models.</description>
+			</channel>
+			<channel id="voc" typeId="voc"/>
+			<channel id="no2" typeId="gas-density">
+				<label>NO2</label>
+				<description>Nitrogen dioxide.</description>
+			</channel>
+			<channel id="co2" typeId="co2"/>
+			<channel id="formaldehyde" typeId="formaldehyde"/>
+			<channel id="aqi" typeId="aqi"/>
+			<channel id="aqi-category" typeId="aqi-category"/>
+			<channel id="dominant-pollutant" typeId="dominant-pollutant"/>
+			<channel id="hepa-filter-life" typeId="remaining-life">
+				<label>HEPA Filter Life</label>
+			</channel>
+			<channel id="hepa-filter-type" typeId="filter-type">
+				<label>HEPA Filter Type</label>
+			</channel>
+			<channel id="carbon-filter-life" typeId="remaining-life">
+				<label>Carbon Filter Life</label>
+			</channel>
+			<channel id="carbon-filter-type" typeId="filter-type">
+				<label>Carbon Filter Type</label>
+			</channel>
+			<channel id="filter-replacement" typeId="fault">
+				<label>Filter Replacement</label>
+				<description>ON when the filter life is 10 % or less.</description>
+			</channel>
+			<channel id="reset-hepa-filter" typeId="button">
+				<label>Reset HEPA Filter</label>
+				<description>Resets the HEPA filter life after replacing the filter.</description>
+			</channel>
+			<channel id="reset-carbon-filter" typeId="button">
+				<label>Reset Carbon Filter</label>
+				<description>Resets the carbon filter life after replacing the filter.</description>
+			</channel>
+			<channel id="fault" typeId="fault">
+				<label>Fault</label>
+				<description>ON while the device reports any fault.</description>
+			</channel>
+			<channel id="active-faults" typeId="text">
+				<label>Active Faults</label>
+				<description>Description of all faults currently reported.</description>
+			</channel>
+			<channel id="fault-aqs" typeId="fault">
+				<label>Air Quality Sensor Fault</label>
+			</channel>
+			<channel id="fault-fltr" typeId="fault">
+				<label>Filter Fault</label>
+			</channel>
+			<channel id="fault-hflr" typeId="fault">
+				<label>HEPA Filter Fault</label>
+			</channel>
+			<channel id="fault-cflr" typeId="fault">
+				<label>Carbon Filter Fault</label>
+			</channel>
+			<channel id="fault-mflr" typeId="fault">
+				<label>Motor Fault</label>
+			</channel>
+			<channel id="fault-temp" typeId="fault">
+				<label>Temperature Sensor Fault</label>
+			</channel>
+			<channel id="fault-humi" typeId="fault">
+				<label>Humidity Sensor Fault</label>
+			</channel>
+			<channel id="fault-tnke" typeId="fault">
+				<label>Water Tank Empty</label>
+			</channel>
+			<channel id="fault-tnkp" typeId="fault">
+				<label>Water Tank Missing</label>
+			</channel>
+			<channel id="fault-cldu" typeId="fault">
+				<label>Humidifier Cleaning Required</label>
+			</channel>
+			<channel id="fault-etwd" typeId="fault">
+				<label>Humidifier Maintenance Required</label>
+			</channel>
+			<channel id="fault-pwr" typeId="fault">
+				<label>Power Supply Fault</label>
+			</channel>
+			<channel id="fault-wifi" typeId="fault">
+				<label>Wi-Fi Fault</label>
+			</channel>
+			<channel id="fault-sys" typeId="fault">
+				<label>System Fault</label>
+			</channel>
+			<channel id="wifi-signal" typeId="wifi-signal"/>
+			<channel id="connection-status" typeId="connection-status"/>
+			<channel id="host" typeId="host"/>
+			<channel id="reconnect" typeId="button">
+				<label>Reconnect</label>
+				<description>Reconnects using the preferred connection type.</description>
+			</channel>
+			<channel id="firmware-version" typeId="firmware-version"/>
+			<channel id="firmware-latest-version" typeId="firmware-version">
+				<label>Latest Firmware Version</label>
+			</channel>
+			<channel id="firmware-update-available" typeId="firmware-update-available"/>
+			<channel id="firmware-auto-update" typeId="firmware-auto-update"/>
+			<channel id="firmware-update" typeId="button">
+				<label>Install Firmware Update</label>
+				<description>Asks the Dyson cloud to install the pending firmware update.</description>
+			</channel>
+		</channels>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description-ref uri="thing-type:dyson:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

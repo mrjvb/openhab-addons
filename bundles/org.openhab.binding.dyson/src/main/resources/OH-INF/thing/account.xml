@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dyson"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Dyson Account</label>
+		<description>A MyDyson cloud account, used to discover devices, obtain their credentials, connect through the Dyson
+			cloud and manage firmware updates.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>E-mail</label>
+				<description>E-mail address of the MyDyson account. In the China region a mobile number including the country code
+					(e.g. +8613800000000) can be used instead.</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of the MyDyson account. Not required for a mobile number login.</description>
+			</parameter>
+			<parameter name="country" type="text" required="true">
+				<label>Country</label>
+				<description>Two letter country code of the account, e.g. US, GB, DE or CN.</description>
+				<default>US</default>
+			</parameter>
+			<parameter name="culture" type="text">
+				<label>Culture</label>
+				<description>Language and country of the account, e.g. en-US, en-GB or de-DE.</description>
+				<default>en-US</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="otp" type="text">
+				<label>Verification Code</label>
+				<description>One-time verification code that Dyson sends by e-mail (or SMS) when the binding logs in. Enter it here
+					to complete the login; it is cleared afterwards.</description>
+			</parameter>
+			<parameter name="token" type="text">
+				<context>password</context>
+				<label>Token</label>
+				<description>Authentication token, filled in automatically after a successful login. Clear it to force a new
+					login.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="5" unit="min">
+				<label>Refresh Interval</label>
+				<description>Interval in minutes to refresh the device list and the firmware information.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

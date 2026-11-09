@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dyson"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="robot">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Dyson Robot Vacuum</label>
+		<description>A Dyson robot vacuum such as the 360 Eye, 360 Heurist or 360 Vis Nav.</description>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
+
+		<channels>
+			<channel id="activity" typeId="activity"/>
+			<channel id="state" typeId="robot-state"/>
+			<channel id="command" typeId="robot-command"/>
+			<channel id="battery-level" typeId="battery-level"/>
+			<channel id="charging" typeId="charging"/>
+			<channel id="power-mode" typeId="power-mode"/>
+			<channel id="clean-type" typeId="text">
+				<label>Clean Type</label>
+				<description>How the current or last clean was started (immediate, scheduled, manual).</description>
+			</channel>
+			<channel id="clean-id" typeId="text">
+				<label>Clean ID</label>
+				<description>Identifier of the current or last cleaning session.</description>
+			</channel>
+			<channel id="clean-duration" typeId="duration">
+				<label>Clean Duration</label>
+				<description>Duration of the current or last clean.</description>
+			</channel>
+			<channel id="position" typeId="text">
+				<label>Position</label>
+				<description>Position of the robot on its map (x,y).</description>
+			</channel>
+			<channel id="dock-state" typeId="text">
+				<label>Dock State</label>
+				<description>What the dock is doing, e.g. DRYING_MOP.</description>
+			</channel>
+			<channel id="active-fault" typeId="text">
+				<label>Active Fault</label>
+				<description>The fault that requires attention, or none.</description>
+			</channel>
+			<channel id="action-required" typeId="fault">
+				<label>Action Required</label>
+				<description>ON when the robot needs the user to do something.</description>
+			</channel>
+			<channel id="brush-bar-life" typeId="remaining-life">
+				<label>Brush Bar Life</label>
+			</channel>
+			<channel id="mop-roller-life" typeId="remaining-life">
+				<label>Mop Roller Life</label>
+			</channel>
+			<channel id="side-brushes-life" typeId="remaining-life">
+				<label>Side Brushes Life</label>
+			</channel>
+			<channel id="robot-filter-life" typeId="remaining-life">
+				<label>Robot Filter Life</label>
+			</channel>
+			<channel id="dock-filter-life" typeId="remaining-life">
+				<label>Dock Filter Life</label>
+			</channel>
+			<channel id="ioniser-cartridge-life" typeId="remaining-life">
+				<label>Ioniser Cartridge Life</label>
+			</channel>
+			<channel id="cleaning-solution-refill" typeId="fault">
+				<label>Cleaning Solution Refill</label>
+				<description>ON when the cleaning solution needs a refill.</description>
+			</channel>
+			<channel id="robot-fault-airways" typeId="fault">
+				<label>Airways Fault</label>
+			</channel>
+			<channel id="robot-fault-battery" typeId="fault">
+				<label>Battery Fault</label>
+			</channel>
+			<channel id="robot-fault-brush-bar-and-traction" typeId="fault">
+				<label>Brush Bar and Traction Fault</label>
+			</channel>
+			<channel id="robot-fault-charge-station" typeId="fault">
+				<label>Charge Station Fault</label>
+			</channel>
+			<channel id="robot-fault-lift" typeId="fault">
+				<label>Lift Fault</label>
+			</channel>
+			<channel id="robot-fault-lost" typeId="fault">
+				<label>Lost Fault</label>
+			</channel>
+			<channel id="robot-fault-optics" typeId="fault">
+				<label>Optics Fault</label>
+			</channel>
+			<channel id="wifi-signal" typeId="wifi-signal"/>
+			<channel id="connection-status" typeId="connection-status"/>
+			<channel id="host" typeId="host"/>
+			<channel id="reconnect" typeId="button">
+				<label>Reconnect</label>
+				<description>Reconnects using the preferred connection type.</description>
+			</channel>
+			<channel id="firmware-version" typeId="firmware-version"/>
+			<channel id="firmware-latest-version" typeId="firmware-version">
+				<label>Latest Firmware Version</label>
+			</channel>
+			<channel id="firmware-update-available" typeId="firmware-update-available"/>
+			<channel id="firmware-auto-update" typeId="firmware-auto-update"/>
+			<channel id="firmware-update" typeId="button">
+				<label>Install Firmware Update</label>
+				<description>Asks the Dyson cloud to install the pending firmware update.</description>
+			</channel>
+		</channels>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description-ref uri="thing-type:dyson:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

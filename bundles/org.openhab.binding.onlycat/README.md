@@ -8,10 +8,10 @@ Updates are pushed by the gateway as they happen.
 
 ## Supported Things
 
-| Thing     | Type   | Description                                              |
-|-----------|--------|----------------------------------------------------------|
-| `account` | Bridge | The connection to an OnlyCat account                     |
-| `flap`    | Thing  | An OnlyCat flap                                          |
+| Thing     | Type   | Description                                               |
+|-----------|--------|-----------------------------------------------------------|
+| `account` | Bridge | The connection to an OnlyCat account                      |
+| `flap`    | Thing  | An OnlyCat flap                                           |
 | `cat`     | Thing  | A cat, known to all flaps of the account by its RFID code |
 
 ## Discovery

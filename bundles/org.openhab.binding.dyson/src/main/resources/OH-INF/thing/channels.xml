@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dyson"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Common -->
+
+	<channel-type id="button">
+		<item-type>Switch</item-type>
+		<label>Action</label>
+		<description>Switch ON to trigger the action.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="wifi-signal" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Wi-Fi Signal</label>
+		<description>Wi-Fi signal strength of the device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+
+	<channel-type id="connection-status" advanced="true">
+		<item-type>String</item-type>
+		<label>Connection</label>
+		<description>How the binding is connected to the device.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="LOCAL">Local</option>
+				<option value="CLOUD">Cloud</option>
+				<option value="DISCONNECTED">Disconnected</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="host" advanced="true">
+		<item-type>String</item-type>
+		<label>Host</label>
+		<description>Host name or IP address used for the current connection.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="firmware-version" advanced="true">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="firmware-update-available" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Firmware Update Available</label>
+		<description>ON when a newer firmware is available for the device.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="firmware-auto-update" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Firmware Auto Update</label>
+		<description>Whether the device installs firmware updates automatically (as configured in the MyDyson app).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fault">
+		<item-type>Switch</item-type>
+		<label>Fault</label>
+		<description>ON while the device reports this fault.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="text" advanced="true">
+		<item-type>String</item-type>
+		<label>Information</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Fan, purifier, heater, humidifier -->
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Switches the fan on or off.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="fan-speed">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+		<description>Fan speed 1-10 (0 switches the fan off). In auto mode the speed chosen by the device is shown.</description>
+		<category>Fan</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state min="0" max="10" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="mode-switch">
+		<item-type>Switch</item-type>
+		<label>Mode</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="airflow-switch">
+		<item-type>Switch</item-type>
+		<label>Airflow</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Airflow</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="oscillation-mode">
+		<item-type>String</item-type>
+		<label>Oscillation Mode</label>
+		<description>Oscillation preset. The available options depend on the device.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="oscillation-angle" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Oscillation Angle</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<state min="0" max="350" step="1" pattern="%d °"/>
+	</channel-type>
+
+	<channel-type id="tilt-oscillation">
+		<item-type>String</item-type>
+		<label>Tilt Oscillation</label>
+		<description>Vertical oscillation of the airflow.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">0°</option>
+				<option value="25">25°</option>
+				<option value="50">50°</option>
+				<option value="BREEZE">Breeze</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sleep-timer">
+		<item-type>Number:Time</item-type>
+		<label>Sleep Timer</label>
+		<description>Remaining time until the device switches off (0 = off, 15-540 minutes).</description>
+		<category>Time</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state min="0" max="540" step="15" pattern="%d min"/>
+	</channel-type>
+
+	<channel-type id="continuous-monitoring">
+		<item-type>Switch</item-type>
+		<label>Continuous Monitoring</label>
+		<description>Keep the air quality sensors active while the fan is off.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="heating-mode">
+		<item-type>String</item-type>
+		<label>Heating Mode</label>
+		<category>Heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Heating</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="HEAT">Heat</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Heating target temperature (1-37 °C). Setting it switches heating on.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="1" max="37" step="1" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heating-active">
+		<item-type>Switch</item-type>
+		<label>Heating Active</label>
+		<description>ON while the heating element is heating.</description>
+		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="humidifier">
+		<item-type>Switch</item-type>
+		<label>Humidifier</label>
+		<category>Humidity</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Humidity</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="target-humidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Target Humidity</label>
+		<description>Humidity target (30-70 %, in steps of 10 %).</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state min="30" max="70" step="10" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="water-hardness">
+		<item-type>String</item-type>
+		<label>Water Hardness</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Water</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="SOFT">Soft</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="HARD">Hard</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="particulate-matter">
+		<item-type>Number:Density</item-type>
+		<label>Particulate Matter</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%d µg/m³"/>
+	</channel-type>
+
+	<channel-type id="voc">
+		<item-type>Number:Density</item-type>
+		<label>VOC</label>
+		<description>Volatile organic compounds.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f mg/m³"/>
+	</channel-type>
+
+	<channel-type id="gas-density">
+		<item-type>Number:Density</item-type>
+		<label>Gas</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%d µg/m³"/>
+	</channel-type>
+
+	<channel-type id="formaldehyde">
+		<item-type>Number:Density</item-type>
+		<label>Formaldehyde</label>
+		<description>Formaldehyde (HCHO) concentration.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f mg/m³"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>CO2</label>
+		<description>Carbon dioxide concentration.</description>
+		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
+		<state readOnly="true" pattern="%d ppm"/>
+	</channel-type>
+
+	<channel-type id="aqi">
+		<item-type>Number</item-type>
+		<label>Air Quality Index</label>
+		<description>Overall air quality index (0-500), the highest index of all measured pollutants.</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>AQI</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="aqi-category">
+		<item-type>String</item-type>
+		<label>Air Quality</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="GOOD">Good</option>
+				<option value="FAIR">Fair</option>
+				<option value="POOR">Poor</option>
+				<option value="VERY_POOR">Very poor</option>
+				<option value="EXTREMELY_POOR">Extremely poor</option>
+				<option value="SEVERE">Severe</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dominant-pollutant">
+		<item-type>String</item-type>
+		<label>Dominant Pollutant</label>
+		<description>The pollutant(s) determining the air quality index.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="remaining-life">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Remaining Life</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="filter-type" advanced="true">
+		<item-type>String</item-type>
+		<label>Filter Type</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Robot vacuum -->
+
+	<channel-type id="activity">
+		<item-type>String</item-type>
+		<label>Activity</label>
+		<description>What the robot is doing.</description>
+		<category>CleaningRobot</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="CLEANING">Cleaning</option>
+				<option value="PAUSED">Paused</option>
+				<option value="RETURNING">Returning to dock</option>
+				<option value="DOCKED">Docked</option>
+				<option value="IDLE">Idle</option>
+				<option value="ERROR">Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="robot-state" advanced="true">
+		<item-type>String</item-type>
+		<label>Robot State</label>
+		<description>Raw state reported by the robot, e.g. FULL_CLEAN_RUNNING or INACTIVE_CHARGED.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="robot-command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Sends a command to the robot. START resumes a paused clean.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="START">Start cleaning</option>
+				<option value="PAUSE">Pause</option>
+				<option value="RESUME">Resume</option>
+				<option value="ABORT">Stop</option>
+				<option value="DOCK">Return to dock</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="battery-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="charging">
+		<item-type>Switch</item-type>
+		<label>Charging</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-mode">
+		<item-type>String</item-type>
+		<label>Power Mode</label>
+		<description>Suction power. The available options depend on the robot model.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+</thing:thing-descriptions>

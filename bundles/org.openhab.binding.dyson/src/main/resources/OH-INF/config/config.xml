@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:dyson:device">
+		<parameter-group name="connection">
+			<label>Connection</label>
+		</parameter-group>
+		<parameter-group name="manual">
+			<label>Manual Setup</label>
+			<description>Only needed without a Dyson account bridge (e.g. from the sticker on the device).</description>
+			<advanced>true</advanced>
+		</parameter-group>
+
+		<parameter name="serialNumber" type="text" required="true" groupName="connection">
+			<label>Serial Number</label>
+			<description>Serial number of the device, e.g. VS6-EU-HJA1234A.</description>
+		</parameter>
+		<parameter name="connectionType" type="text" groupName="connection">
+			<label>Connection Type</label>
+			<description>How to connect to the device. Cloud connections require a Dyson account bridge.</description>
+			<options>
+				<option value="LOCAL">Local only</option>
+				<option value="LOCAL_CLOUD_FALLBACK">Local with cloud fallback</option>
+				<option value="CLOUD_LOCAL_FALLBACK">Cloud with local fallback</option>
+				<option value="CLOUD">Cloud only</option>
+			</options>
+			<default>LOCAL_CLOUD_FALLBACK</default>
+			<limitToOptions>true</limitToOptions>
+		</parameter>
+		<parameter name="hostname" type="text" groupName="connection">
+			<context>network-address</context>
+			<label>Host Name</label>
+			<description>Host name or IP address of the device for local connections. Defaults to &lt;serial number&gt;.local
+				(mDNS). A fixed IP address is recommended.</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="10" unit="s" groupName="connection">
+			<label>Refresh Interval</label>
+			<description>Interval in seconds at which the current state is requested from the device.</description>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="removeUnsupportedChannels" type="boolean" groupName="connection">
+			<label>Remove Unsupported Channels</label>
+			<description>Removes the channels of features that the device does not report, shortly after the first
+				connection.
+				Re-create the thing to restore them.</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="localPassword" type="text" groupName="manual">
+			<context>password</context>
+			<label>Local Password</label>
+			<description>Password of the MQTT broker on the device (Wi-Fi password from the sticker). Retrieved from the cloud
+				when an account bridge is used.</description>
+		</parameter>
+		<parameter name="mqttPrefix" type="text" groupName="manual">
+			<label>MQTT Prefix</label>
+			<description>Root MQTT topic of the device (product type), e.g. 438M or 527. Retrieved from the cloud when an
+				account
+				bridge is used.</description>
+		</parameter>
+		<parameter name="capabilities" type="text" groupName="manual">
+			<label>Capabilities</label>
+			<description>Comma separated device capabilities, e.g. AdvanceOscillationDay1,Scheduling,ExtendedAQ,Heating,
+				Humidifier. Retrieved from the cloud when an account bridge is used.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
