@@ -110,15 +110,17 @@ public class OnlyCatFlapHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(OnlyCatFlapConfiguration.class);
         if (config.deviceId.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error.missing-device-id");
             return;
         }
-        if (getAccount() == null) {
+        OnlyCatAccountHandler account = getAccount();
+        if (account == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
+        account.requestReplay(this);
     }
 
     @Override
@@ -217,7 +219,7 @@ public class OnlyCatFlapHandler extends BaseThingHandler {
 
     void deviceNotFound() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-            "@text/offline.config-error.unknown-flap");
+                "@text/offline.config-error.unknown-flap");
     }
 
     void updateDevice(Device update) {

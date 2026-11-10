@@ -178,6 +178,16 @@ public class OnlyCatAccountHandler extends BaseBridgeHandler implements SocketIo
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        requestReplay(childHandler);
+    }
+
+    /**
+     * Sends the known data to a flap or cat handler once the account has synchronized.
+     *
+     * Children call this from their {@code initialize()}: after a configuration change the framework re-initializes a
+     * handler without calling {@link #childHandlerInitialized}, so the child would otherwise stay UNKNOWN.
+     */
+    public void requestReplay(ThingHandler childHandler) {
         execute(() -> {
             if (synchronizedOnce) {
                 if (childHandler instanceof OnlyCatFlapHandler flap) {

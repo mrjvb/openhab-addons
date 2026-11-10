@@ -63,12 +63,16 @@ public class OnlyCatCatHandler extends BaseThingHandler {
     public void initialize() {
         rfidCode = getConfigAs(OnlyCatCatConfiguration.class).rfidCode;
         if (rfidCode.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error.missing-rfid-code");
             return;
         }
         restoreManualLocation();
         updateStatus(ThingStatus.UNKNOWN);
+        OnlyCatAccountHandler account = getAccount();
+        if (account != null) {
+            account.requestReplay(this);
+        }
     }
 
     @Override
@@ -94,7 +98,7 @@ public class OnlyCatCatHandler extends BaseThingHandler {
 
     void catNotFound() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-            "@text/offline.config-error.unknown-cat");
+                "@text/offline.config-error.unknown-cat");
     }
 
     private void publish() {
@@ -121,6 +125,11 @@ public class OnlyCatCatHandler extends BaseThingHandler {
         manualTime = time;
         updateProperty(PROPERTY_MANUAL_LOCATION, location == null ? null : location.name());
         updateProperty(PROPERTY_MANUAL_LOCATION_TIME, time == null ? null : time.toString());
+    }
+
+    private @Nullable OnlyCatAccountHandler getAccount() {
+        var bridge = getBridge();
+        return bridge != null && bridge.getHandler() instanceof OnlyCatAccountHandler account ? account : null;
     }
 
     private void restoreManualLocation() {
