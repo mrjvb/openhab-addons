@@ -237,7 +237,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             // User has provided code in config.
             logger.debug("Code is given in thing configuration '{}'. Trying to validate code...",
                     getThing().getUID().getAsString());
-            storage.put(AUTH_CODE_KEY, lastTriedCode);
+            // Remember the tried code, so a rejected one-time code is not submitted again.
+            storage.put(AUTH_CODE_KEY, code);
             success = localICloudService.validate2faCode(code);
             if (!success) {
                 authState = AuthState.INITIAL;

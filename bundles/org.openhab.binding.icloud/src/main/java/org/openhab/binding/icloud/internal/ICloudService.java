@@ -23,14 +23,13 @@ import java.util.UUID;
 import org.bouncycastle.crypto.CryptoException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.icloud.internal.utilities.AuthResponseParser;
 import org.openhab.binding.icloud.internal.utilities.JsonUtils;
 import org.openhab.binding.icloud.internal.utilities.ListUtil;
 import org.openhab.binding.icloud.internal.utilities.Pair;
 import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonSyntaxException;
 
 /**
  *
@@ -136,30 +135,45 @@ public class ICloudService {
         return authenticateWithToken();
     }
 
-    private void getMfaAuthOptions()
-            throws JsonSyntaxException, IOException, InterruptedException, ICloudApiResponseException {
+    /**
+     * Load the 2-FA options (e.g. trusted phone numbers) into {@link #data}.
+     *
+     * Like pyicloud, the HTML variant is requested first and the options are read from its boot args. If that yields
+     * no phone verification data, the JSON variant is requested as a fallback.
+     */
+    private void getMfaAuthOptions() throws IOException, InterruptedException, ICloudApiResponseException {
+        Map<String, Object> options = fetchMfaAuthOptions("text/html");
+        if (options == null || !options.containsKey("phoneNumberVerification")) {
+            logger.debug("No phone verification data in HTML 2-FA options, retrying with JSON.");
+            Map<String, Object> jsonOptions = fetchMfaAuthOptions("application/json");
+            if (jsonOptions != null) {
+                options = jsonOptions;
+            }
+        }
+        if (options != null) {
+            data = options;
+        } else {
+            logger.debug("Apple returned no 2-FA options. Waiting for a code on a trusted device.");
+        }
+    }
+
+    private @Nullable Map<String, Object> fetchMfaAuthOptions(String accept)
+            throws IOException, InterruptedException, ICloudApiResponseException {
         List<Pair<String, String>> headers = ListUtil.replaceEntries(getAuthHeaders(),
-                List.of(Pair.of("Accept", "application/json")));
+                List.of(Pair.of("Accept", accept)));
         addSessionHeaders(headers);
         String responseBody;
         try {
             responseBody = session.get(AUTH_ENDPOINT, headers);
         } catch (ICloudApiAuthenticationException ex) {
-            // Apple responds with HTTP 409 (2FA_REQUIRED) here as part of the normal 2-FA
-            // challenge flow; the body already contains the phoneNumberVerification data we
-            // need. Without this, the exception propagates and canRequestSmsCode()/
-            // requestSmsCode() below is never reached, so 2-FA accounts can never authenticate.
-            if (ex.getStatusCode() == 409) {
-                responseBody = ex.body;
-            } else {
+            // Apple responds with HTTP 409 (2FA_REQUIRED) here as part of the normal 2-FA challenge flow; the body
+            // carries the 2-FA options. Without this, canRequestSmsCode()/requestSmsCode() are never reached.
+            if (ex.getStatusCode() != AuthResponseParser.STATUS_TWO_FACTOR_REQUIRED) {
                 throw ex;
             }
+            responseBody = ex.getBody();
         }
-        @Nullable
-        Map<String, Object> localSessionData = JsonUtils.toMap(responseBody);
-        if (localSessionData != null) {
-            data = localSessionData;
-        }
+        return AuthResponseParser.parseMfaAuthOptions(responseBody);
     }
 
     /**
@@ -446,24 +460,27 @@ public class ICloudService {
         try {
             this.session.post(endpoint, JsonUtils.toJson(requestBody), headers);
         } catch (ICloudApiResponseException ex) {
-            logger.trace("Exception on code verification with HTTP status {}. Verification might still be successful.",
-                    ex.getStatusCode(), ex);
-            // iCloud API returns different 4xx error codes even if validation is successful
-            // currently 400 seems to show that verification "really" failed.
-            if (ex.getStatusCode() == 400 || ex.getStatusCode() >= 500) {
-                this.logger.debug("Verification failed with HTTP status {}.", ex.getStatusCode());
+            // Apple may answer a valid code with HTTP 409, but then the body states {"securityCode":{"valid":true}}.
+            // Any other error status means the code was rejected.
+            if (!AuthResponseParser.isAcceptedSecurityCodeConflict(ex.getStatusCode(), ex.getBody())) {
+                logger.debug("Verification failed with HTTP status {}.", ex.getStatusCode());
+                logger.trace("Verification response: {}", ex.getBody());
                 smsCodeRequested = false; // Reset flag on failure
                 cachedSmsPhoneNumber = null; // Clear cached phone
                 return false;
             }
+            logger.debug("Verification answered with HTTP 409, but the security code is marked valid.");
         }
 
         logger.debug("Code verification successful.");
         smsCodeRequested = false; // Reset flag after successful verification
         cachedSmsPhoneNumber = null; // Clear cached phone
 
-        trustSession();
-        return true;
+        boolean trusted = trustSession();
+        if (!trusted) {
+            logger.warn("2-FA code was accepted, but establishing session trust failed.");
+        }
+        return trusted;
     }
 
     private void addSessionHeaders(List<Pair<String, String>> headers) {

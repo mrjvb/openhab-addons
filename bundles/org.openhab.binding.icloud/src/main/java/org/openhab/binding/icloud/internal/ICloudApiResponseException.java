@@ -50,4 +50,11 @@ public class ICloudApiResponseException extends Exception {
     public int getStatusCode() {
         return this.statusCode;
     }
+
+    /**
+     * @return body of the failed response.
+     */
+    public String getBody() {
+        return this.body;
+    }
 }
