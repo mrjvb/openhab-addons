@@ -183,7 +183,7 @@ public class PorscheAccountHandler extends BaseBridgeHandler {
     // ---------------------------------------------------------------- connection & polling
 
     private void connect(PorscheApi currentApi, @Nullable String captcha) {
-        if (currentApi != api) {
+        if (!isCurrent(currentApi)) {
             return;
         }
         try {
@@ -191,18 +191,18 @@ public class PorscheAccountHandler extends BaseBridgeHandler {
             if (captcha != null && pending == null) {
                 logger.debug("Captcha configured but no login is waiting for it, clearing stale answer");
                 clearCaptcha();
-                if (currentApi == api) {
+                if (isCurrent(currentApi)) {
                     scheduler.execute(() -> connect(currentApi, null));
                 }
                 return;
             }
             currentApi.authenticate(captcha, pending);
-            if (currentApi != api) {
+            if (!isCurrent(currentApi)) {
                 return;
             }
             if (captcha != null) {
                 clearCaptcha();
-                if (currentApi != api) {
+                if (!isCurrent(currentApi)) {
                     return;
                 }
             }
@@ -220,7 +220,7 @@ public class PorscheAccountHandler extends BaseBridgeHandler {
     private void poll(PorscheApi currentApi) {
         try {
             for (Thing child : getThing().getThings()) {
-                if (currentApi != api) {
+                if (!isCurrent(currentApi)) {
                     return;
                 }
                 if (child.getHandler() instanceof PorscheVehicleHandler vehicleHandler) {
@@ -235,7 +235,7 @@ public class PorscheAccountHandler extends BaseBridgeHandler {
                     }
                 }
             }
-            if (currentApi == api && getThing().getStatus() != ThingStatus.ONLINE) {
+            if (isCurrent(currentApi) && getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (InterruptedException e) {
@@ -262,7 +262,7 @@ public class PorscheAccountHandler extends BaseBridgeHandler {
     private void refreshVehicle(PorscheApi currentApi, String vin, boolean wakeUp)
             throws PorscheApiException, InterruptedException {
         JsonObject overview = currentApi.getOverview(vin, wakeUp);
-        if (currentApi != api) {
+        if (!isCurrent(currentApi)) {
             return;
         }
         VehicleData data = Objects.requireNonNull(vehicles.compute(vin,
@@ -273,6 +273,14 @@ public class PorscheAccountHandler extends BaseBridgeHandler {
                 vehicleHandler.vehicleUpdated(data);
             }
         }
+    }
+
+    /**
+     * Whether the given API instance is still the active one; a reconnect or dispose replaces it, after which
+     * running tasks of the old instance must stop. PorscheApi does not override equals, so this is an identity check.
+     */
+    private boolean isCurrent(PorscheApi currentApi) {
+        return Objects.equals(currentApi, api);
     }
 
     /** Errors that concern one vehicle only and must not take the whole account offline. */
@@ -287,7 +295,7 @@ public class PorscheAccountHandler extends BaseBridgeHandler {
     }
 
     private void handleApiError(PorscheApi currentApi, PorscheApiException e) {
-        if (currentApi != api) {
+        if (!isCurrent(currentApi)) {
             return;
         }
         if (e instanceof PorscheCaptchaRequiredException captchaException) {
